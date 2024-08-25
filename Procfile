@@ -1,2 +1,2 @@
 web: npm run start
-worker: python scraper.py
+worker: python3 scraper.py

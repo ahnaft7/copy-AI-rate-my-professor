@@ -5,6 +5,7 @@ from dotenv import load_dotenv, dotenv_values
 import os
 import sys
 import shutil
+import pyperclip
 
 
 
@@ -19,29 +20,40 @@ print(f"Scraping data for {company_name}")
 load_dotenv()
 
 
-# Open up file to copy code
-pyautogui.hotkey('win', 'e')
-time.sleep(15)
+# # Open up file to copy code
+# pyautogui.hotkey('win', 'e')
+# time.sleep(15)
 
-# Type file path in the home searchbar in file explorer and Focus on the address bar (Ctrl + L or Alt + D)
-pyautogui.hotkey('ctrl', 'l')  # You can also use 'alt', 'd' depending on your version
-time.sleep(3)
-config = dotenv_values(".env")
-
-
-pyautogui.write('tool_scrape.txt')
-time.sleep(5)
-pyautogui.press('enter')  # Execute
-
-print("Clicked on file of interest holding the JS code")
-time.sleep(2)
+# # Type file path in the home searchbar in file explorer and Focus on the address bar (Ctrl + L or Alt + D)
+# pyautogui.hotkey('ctrl', 'l')  # You can also use 'alt', 'd' depending on your version
+# time.sleep(3)
+# config = dotenv_values(".env")
 
 
-# Select all content and copy
-pyautogui.hotkey('ctrl', 'a')  # Select all
-pyautogui.hotkey('ctrl', 'c')  # Copy
-time.sleep(5)
+# pyautogui.write('tool_scrape.txt')
+# time.sleep(5)
+# pyautogui.press('enter')  # Execute
 
+# print("Clicked on file of interest holding the JS code")
+# time.sleep(2)
+
+
+# # Select all content and copy
+# pyautogui.hotkey('ctrl', 'a')  # Select all
+# pyautogui.hotkey('ctrl', 'c')  # Copy
+# time.sleep(5)
+
+# Relative path to your text file
+file_path = 'tool_scrape.txt'
+
+# Open the file in read mode and read the contents
+with open(file_path, 'r') as file:
+    content = file.read()
+
+# Copy the contents to the clipboard
+pyperclip.copy(content)
+
+print("Content copied to clipboard.")
 
 # Open the Glassdoor login page in the default web browser
 webbrowser.open('https://www.glassdoor.com/profile/login_input.htm')

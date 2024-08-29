@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Stack, TextField, Typography, CircularProgress } from '@mui/material';
 import { useState } from 'react';
 import FilterComponent from '../components/FilterComponent';
 
@@ -8,12 +8,14 @@ export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: `Hi! I'm the Rate My Professor support assistant. How can I help you today?`,
+      content: `Hi! I'm the Rate My Company support assistant. How can I help you today?`,
     },
   ]);
   const [message, setMessage] = useState('');
   const [filters, setFilters] = useState({ role: '', minRating: '' });
   const [searchCompany, setSearchCompany] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Track loading state
+  const [isScraping, setIsScraping] = useState(false); // Track scraping state
 
   // Function to handle sending company name for scraping
   const handleSearchCompany = async () => {
@@ -33,25 +35,34 @@ export default function Home() {
 
       const data = await response.json();
       
-      if (response.ok) {
-        setMessages((messages) => [
-          ...messages,
-          { role: 'user', content: `Searching for reviews of ${searchCompany}` },
-          { role: 'assistant', content: 'Scraping data...' },
-        ]);
-        setSearchCompany('');
-      } else {
-        setMessages((messages) => [
-          ...messages,
-          { role: 'assistant', content: `Error: ${data.error}` },
-        ]);
-      }
+  
     } catch (error) {
       setMessages((messages) => [
         ...messages,
         { role: 'assistant', content: `Error: ${error.message}` },
       ]);
     }
+  };
+
+  const handleSubmit = async () => {
+    const response = await fetch('/api/upsert', { // Adjust the path to your API route
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ companyName: searchCompany }), // Send company name in the request body
+    });
+
+    const data = await response.json();
+    setIsScraping(false)
+    console.log(data); // Handle the response
+  };
+
+  // Upon clicking the button, companyName is sent from front end to api/chat/route and api/search-company/route.
+  const handleClick = async () => {
+    setIsScraping(true)
+    await handleSearchCompany();
+    handleSubmit();
   };
 
   const sendMessage = async () => {
@@ -64,6 +75,7 @@ export default function Home() {
     ]);
     
     setMessage('');
+    setIsLoading(true); // Set loading to true
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
@@ -78,6 +90,7 @@ export default function Home() {
 
     const processText = async ({ done, value }) => {
       if (done) {
+        setIsLoading(false); // Set loading to false once done
         return result;
       }
       const text = decoder.decode(value || new Uint8Array(), { stream: true });
@@ -128,10 +141,16 @@ export default function Home() {
         <Button 
           style={{ backgroundColor: "#FF4433" }} 
           variant="contained" 
-          onClick={handleSearchCompany}
+          onClick={handleClick}
         >
           Search Company
         </Button>
+        {isScraping && ( // Display loading spinner when loading
+            <Box display="flex" justifyContent="center" alignItems="center" sx={{ my: 2 }}>
+              <CircularProgress color="inherit" />
+              <Typography variant="body1" ml={2}>Scraping...</Typography>
+            </Box>
+        )}
         <FilterComponent onFilterChange={(filters) => setFilters(filters)} />
       </Box>
       <Stack
@@ -171,6 +190,11 @@ export default function Home() {
               </Box>
             </Box>
           ))}
+          {isLoading && ( // Display loading spinner when loading
+            <Box display="flex" justifyContent="flex-start">
+              <CircularProgress color="inherit" />
+            </Box>
+          )}
         </Stack>
         
         <Stack direction={'row'} spacing={2}>

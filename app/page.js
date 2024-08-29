@@ -16,7 +16,7 @@ export default function landingPage() {
       />
       <div style={styles.textBox}>
         <p style={styles.description}>
-            FiresideAI&apos;s rate my professor app with AI integration, built with OpenAI, Llama 3.1, Pinecone, Next.js, Shadcn UI, RAG, and more.
+            FiresideAI's rate my professor app with AI integration, built with OpenAI, Llama 3.1, Pinecone, Next.js, Shadcn UI, RAG, and more.
         </p>
       </div>
       <Button>

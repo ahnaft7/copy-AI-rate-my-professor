@@ -26,8 +26,10 @@ export async function POST(request) {
     // Define the full path to the Python script
     const pythonScriptPath = process.env.SCRAPER_PATH
 
+    console.log("Running Scraper...")
+
     // Run the Python script with the companyName as an argument
-    const { stdout, stderr } = await execPromise(`python3 "${pythonScriptPath}" ${companyName}`)
+    const { stdout, stderr } = await execPromise(`python "${pythonScriptPath}" ${companyName}`)
 
     if (stderr) {
       console.error('Python script error:', stderr)
